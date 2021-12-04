@@ -3,3 +3,4 @@
 /B/*
 credentials.py
 *.zip
+*.pyc
