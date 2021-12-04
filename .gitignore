@@ -4,4 +4,4 @@
 credentials.py
 *.zip
 *.pyc
-result.js
+result.json
