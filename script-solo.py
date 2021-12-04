@@ -2,6 +2,8 @@ import psycopg2
 from psycopg2 import Error
 import json
 from decimal import Decimal
+import shutil
+import credentials
 
 
 def default(obj):
@@ -35,23 +37,19 @@ def hinted_tuple_hook(obj):
         return obj
 
 
-db = "db"
-password = "password"
-user = "user"
-host = "host"
-port = "port"
-
 connectionA = ""
 folderA = "B/"
 resultA = 0
 result = []
+
+output_filename = "SQL_221416"
 for i in range(1, 13):
     try:
-        connectionA = psycopg2.connect(user=user,
-                                       password=password,
-                                       host=host,
-                                       port=port,
-                                       database=db)
+        connectionA = psycopg2.connect(user=credentials.user,
+                                       password=credentials.password,
+                                       host=credentials.host,
+                                       port=credentials.port,
+                                       database=credentials.db)
 
         # Create a cursor to perform database operations
         cursorA = connectionA.cursor()
@@ -71,6 +69,7 @@ for i in range(1, 13):
         resultA = cursorA.fetchall()
 
         print()
+        print("Query ", i)
         uguale = {"id": i, "content": {
             "A": {"query": queryA, "result": resultA}}, "status": 'ok'}
         result.append(uguale)
@@ -85,6 +84,8 @@ for i in range(1, 13):
             cursorA.close()
             connectionA.close()
 result = json.dumps(result, default=default)
+shutil.make_archive(output_filename, 'zip', folderA)
+
 
 # result = (MultiDimensionalArrayEncoder()).encode(diverse)
 # result = json.dumps(diverse, default=default)

@@ -2,6 +2,7 @@ import psycopg2
 from psycopg2 import Error
 import json
 from decimal import Decimal
+import credentials
 
 
 def default(obj):
@@ -55,34 +56,31 @@ resultA = 0
 resultB = 0
 for i in range(1, 13):
     try:
-        connectionA = psycopg2.connect(user=user,
-                                       password=password,
-                                       host=host,
-                                       port=port,
-                                       database=db)
-        connectionB = psycopg2.connect(user=user,
-                                       password=password,
-                                       host=host,
-                                       port=port,
-                                       database=db)
-        connectionC = psycopg2.connect(user=user,
-                                       password=password,
-                                       host=host,
-                                       port=port,
-                                       database=db)
-
+        connectionA = psycopg2.connect(user=credentials.user,
+                                       password=credentials.password,
+                                       host=credentials.host,
+                                       port=credentials.port,
+                                       database=credentials.db)
+        connectionB = psycopg2.connect(user=credentials.user,
+                                       password=credentials.password,
+                                       host=credentials.host,
+                                       port=credentials.port,
+                                       database=credentials.db)
+        connectionC = psycopg2.connect(user=credentials.user,
+                                       password=credentials.password,
+                                       host=credentials.host,
+                                       port=credentials.port,
+                                       database=credentials.db)
 
         # Create a cursor to perform database operations
         cursorA = connectionA.cursor()
         cursorB = connectionB.cursor()
         cursorC = connectionC.cursor()
 
-
         queryA = ''.join(
             open(folderA+'query_'+str(i)+'.sql', 'r').readlines()).strip().strip('\n')
         queryB = ''.join(
             open(folderB+'query_'+str(i)+'.sql', 'r').readlines()).strip().strip('\n')
-
 
         explodeA = queryA.replace('\n', ' ').split(";")
         if "" in explodeA:
@@ -90,19 +88,17 @@ for i in range(1, 13):
         explodeB = queryB.replace('\n', ' ').split(";")
         if "" in explodeB:
             explodeB.remove("")
-      
 
         firstA = explodeA[0:len(explodeA)-1]
         lastA = explodeA[len(explodeA)-1]
         firstB = explodeB[0:len(explodeB)-1]
         lastB = explodeB[len(explodeB)-1]
 
-        
         cursorA.execute(queryA)
         cursorB.execute(queryB)
 
-        resultA = cursorA.resultchall()
-        resultB = cursorB.resultchall()
+        resultA = cursorA.fetchall()
+        resultB = cursorB.fetchall()
 
         print()
         if resultA == resultB:
@@ -139,9 +135,9 @@ for i in range(1, 13):
             # print(queryFull)
 
             cursorC.execute(queryFull)
-            resDiffAinB = cursorC.resultchall()
+            resDiffAinB = cursorC.fetchall()
             cursorC.execute(queryDiffBinA)
-            resDiffBinA = cursorC.resultchall()
+            resDiffBinA = cursorC.fetchall()
 
             diversa = {"id": i, "content": {"A": {"query": queryA, "result": resultA, "diff": resDiffAinB}, "B": {
                 "query": queryB, "result": resultB, "diff": resDiffBinA}}, "status": 'ok'}
