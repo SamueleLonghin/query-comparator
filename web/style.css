@@ -1,3 +1,15 @@
 .query{
   background-color: antiquewhite;
 }
+.select{
+  color: #dc3545;
+}
+.from{
+  color: #dc3545;
+}
+.join{
+  color: #dc3545;
+}
+.functions{
+  color: chocolate;
+}

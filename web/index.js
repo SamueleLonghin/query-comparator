@@ -21,8 +21,29 @@ $.get("consegne.json", function (consegne) {
             Object.keys(model.content).forEach(key => {
                 let element = model.content[key]
                 console.log(element)
-                let query_E = $("<div id='d-E-" + model.id + "' class='col query'>" + element.query + "</div>")
-                querys.append(query_E);
+                let query_E = element.query;
+                // query_E = query_E.replaceAll("select", "<span class='select'>SELECT</span>")
+                // query_E = query_E.replaceAll("from", "<span class='from'>FROM</span>")
+                // query_E = query_E.replaceAll("join", "<span class='join'>JOIN</span>")
+                // query_E = query_E.replaceAll("inner", "<span class='join'>INNER</span>")
+                // query_E = query_E.replaceAll("left", "<span class='join'>LEFT</span>")
+                // query_E = query_E.replaceAll("right", "<span class='join'>RIGHT</span>")
+                // query_E = query_E.replaceAll("table", "<span class='join'>TABLE</span>")
+                // query_E = query_E.replaceAll("view", "<span class='join'>VIEW</span>")
+                // query_E = query_E.replaceAll("temp", "<span class='join'>TEMP</span>")
+                // query_E = query_E.replaceAll("create", "<span class='join'>CREATE</span>")
+                // query_E = query_E.replaceAll("drop", "<span class='join'>DROP</span>")
+
+                // query_E = query_E.replaceAll("max(", "<span class='functions'>max</span>(")
+                // query_E = query_E.replaceAll("min(", "<span class='functions'>min</span>(")
+                // query_E = query_E.replaceAll("count(", "<span class='functions'>count</span>(")
+                // query_E = query_E.replaceAll("avg(", "<span class='functions'>avg</span>(")
+                query_E = hljs.highlight(query_E, { language: 'sql' }).value
+
+                query_E = query_E.replaceAll(";", ";<br> <br>");
+
+                let container_query_E = $("<div id='d-E-" + model.id + "' class='col query'>" + query_E + "</div>")
+                querys.append(container_query_E);
                 let result_E;
                 let length_res_E = element.result ? element.result.length : 0;
                 let div_result_E;
@@ -35,10 +56,12 @@ $.get("consegne.json", function (consegne) {
                     div_result_E.append(result_E);
                 }
                 results.append(div_result_E);
-                let diff_E = JSON.stringify(element.diff, null, 2);
-                let length_diff_E = element.diff ? element.diff.length : 0;
-                let div_diff_E = $("<div id='diff-E-" + model.id + "' class='col '>" + diff_E + " <br><b>count: " + length_diff_E + "</b></div>")
-                diffs.append(div_diff_E);
+                if (element.diff) {
+                    let diff_E = JSON.stringify(element.diff, null, 2);
+                    let length_diff_E = element.diff ? element.diff.length : 0;
+                    let div_diff_E = $("<div id='diff-E-" + model.id + "' class='col '>" + diff_E + " <br><b>count: " + length_diff_E + "</b></div>")
+                    diffs.append(div_diff_E);
+                }
             });
 
 
@@ -57,8 +80,11 @@ $.get("consegne.json", function (consegne) {
 });
 
 function generaTabella(json) {
-    let table = $("<table>");
-
+    let table = $("<table class='table table-striped table-bordered'>");
+    let thead = $("<thead>");
+    let tbody = $("<tbody>");
+    table.append(thead);
+    table.append(tbody);
     var columnSet = [];
     var headerTr$ = $('<tr/>');
 
@@ -67,12 +93,13 @@ function generaTabella(json) {
         for (var key in rowHash) {
             if ($.inArray(key, columnSet) == -1) {
                 columnSet.push(key);
-                headerTr$.append($('<th/>').html(key));
+                if (parseInt(key) > 10)
+                    headerTr$.append($('<th/>').html(key));
+                console.log(key)
             }
         }
     }
-    table.append(headerTr$);
-
+    thead.append(headerTr$);
     var columns = columnSet;
 
     for (var i = 0; i < json.length; i++) {
@@ -82,7 +109,7 @@ function generaTabella(json) {
             if (cellValue == null) cellValue = "";
             row$.append($('<td/>').html(cellValue));
         }
-        table.append(row$);
+        tbody.append(row$);
     }
 
     return table;
