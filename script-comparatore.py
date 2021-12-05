@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2 import Error
 import json
+import re
 from decimal import Decimal
 import credentials
 
@@ -78,9 +79,17 @@ for i in range(1, 13):
         cursorC = connectionC.cursor()
 
         queryA = ''.join(
-            open(folderA+'query_'+str(i)+'.sql', 'r').readlines()).strip().strip('\n')
+            open(folderA+'query_'+str(i)+'.sql', 'r').readlines()).strip()
         queryB = ''.join(
-            open(folderB+'query_'+str(i)+'.sql', 'r').readlines()).strip().strip('\n')
+            open(folderB+'query_'+str(i)+'.sql', 'r').readlines()).strip()
+
+        queryA = re.sub(
+            '(\/*(\*)+[^*]+\*\/)|--[^\n\r]+?(?:\*\)|[\n\r])|--\n', '', queryA)
+        queryB = re.sub(
+            '(\/*(\*)+[^*]+\*\/)|--[^\n\r]+?(?:\*\)|[\n\r])|--\n', '', queryB)
+
+        queryA = queryA.strip('\n')
+        queryB = queryB.strip('\n')
 
         explodeA = queryA.replace('\n', ' ').split(";")
         if "" in explodeA:
@@ -150,6 +159,8 @@ for i in range(1, 13):
         diverse.append(diversa)
         tutte.append(diversa)
         print("ERRORE:", error)
+        print(queryDiffAinB)
+        print(queryDiffBinA)
     finally:
         if (connectionA):
             cursorA.close()
