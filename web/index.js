@@ -4,7 +4,7 @@ $.get("consegne.json", function (consegne) {
     $.get("result.json", function (data) {
         console.log(data)
         data.forEach((model) => {
-            let div = $("<div id='d-" + model.id + "' class='card " + (model.status == 'err' ? 'bg-warning' : '') + "'> <h2>" + model.id + "</h2></div>");
+            let div = $("<div id='d-" + model.id + "' class='card " + (model.status == 'err' ? 'bg-warning' : (model.status == 'div' ? 'bg-info' : '')) + "'> <h2>" + model.id + "</h2></div>");
 
             let link = $('<a class="btn btn-secondary btn-lg btn-block text-wrap" data-bs-toggle="collapse" href="#container-' + model.id + '" role="button" aria-expanded="false" aria-controls="multiCollapseExample1" style="margin-bottom:4px;white-space: normal;">')
                 .append($("<p>").text(consegne[model.id - 1]));

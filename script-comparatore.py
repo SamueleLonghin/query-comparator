@@ -149,7 +149,7 @@ for i in range(1, 13):
             resDiffBinA = cursorC.fetchall()
 
             diversa = {"id": i, "content": {"A": {"query": queryA, "result": resultA, "diff": resDiffAinB}, "B": {
-                "query": queryB, "result": resultB, "diff": resDiffBinA}}, "status": 'ok'}
+                "query": queryB, "result": resultB, "diff": resDiffBinA}}, "status": 'div'}
             diverse.append(diversa)
             tutte.append(diversa)
 
