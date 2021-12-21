@@ -1,9 +1,10 @@
+import os
 import psycopg2
 from psycopg2 import Error
 import json
 import re
 from decimal import Decimal
-import credentials
+from dotenv import load_dotenv
 
 
 def default(obj):
@@ -37,11 +38,12 @@ def hinted_tuple_hook(obj):
         return obj
 
 
-db = "db"
-password = "password"
-user = "user"
-host = "host"
-port = "port"
+load_dotenv()
+edb = os.environ.get('DB_DBNAME')
+epassword = os.environ.get("DB_PASS")
+euser = os.environ.get("DB_USER")
+ehost = os.environ.get("DB_HOST")
+eport = os.environ.get("DB_PORT")
 
 scriviUguali = True
 
@@ -57,21 +59,21 @@ resultA = 0
 resultB = 0
 for i in range(1, 13):
     try:
-        connectionA = psycopg2.connect(user=credentials.user,
-                                       password=credentials.password,
-                                       host=credentials.host,
-                                       port=credentials.port,
-                                       database=credentials.db)
-        connectionB = psycopg2.connect(user=credentials.user,
-                                       password=credentials.password,
-                                       host=credentials.host,
-                                       port=credentials.port,
-                                       database=credentials.db)
-        connectionC = psycopg2.connect(user=credentials.user,
-                                       password=credentials.password,
-                                       host=credentials.host,
-                                       port=credentials.port,
-                                       database=credentials.db)
+        connectionA = psycopg2.connect(user=euser,
+                                       password=epassword,
+                                       host=ehost,
+                                       port=eport,
+                                       database=edb)
+        connectionB = psycopg2.connect(user=euser,
+                                       password=epassword,
+                                       host=ehost,
+                                       port=eport,
+                                       database=edb)
+        connectionC = psycopg2.connect(user=euser,
+                                       password=epassword,
+                                       host=ehost,
+                                       port=eport,
+                                       database=edb)
 
         # Create a cursor to perform database operations
         cursorA = connectionA.cursor()
@@ -154,13 +156,14 @@ for i in range(1, 13):
             tutte.append(diversa)
 
     except (Exception, Error) as error:
-        diversa = {"id": i, "content": {"A": {"query": queryA, "result": resultA, "diff": resDiffAinB}, "B": {
-            "query": queryB, "result": resultB, "diff": resDiffBinA}}, "status": "err", "error": str(error)}
-        diverse.append(diversa)
-        tutte.append(diversa)
+        if(queryA):
+            diversa = {"id": i, "content": {"A": {"query": queryA, "result": resultA, "diff": resDiffAinB}, "B": {
+                "query": queryB, "result": resultB, "diff": resDiffBinA}}, "status": "err", "error": str(error)}
+            diverse.append(diversa)
+            tutte.append(diversa)
+            print(queryDiffAinB)
+            print(queryDiffBinA)
         print("ERRORE:", error)
-        print(queryDiffAinB)
-        print(queryDiffBinA)
     finally:
         if (connectionA):
             cursorA.close()

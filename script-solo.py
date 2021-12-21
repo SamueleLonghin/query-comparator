@@ -1,9 +1,10 @@
+import os
 import psycopg2
 from psycopg2 import Error
 import json
 from decimal import Decimal
 import shutil
-import credentials
+from dotenv import load_dotenv
 
 
 def default(obj):
@@ -36,6 +37,12 @@ def hinted_tuple_hook(obj):
     else:
         return obj
 
+load_dotenv()
+edb = os.environ.get('DB_DBNAME')
+epassword = os.environ.get("DB_PASS")
+euser = os.environ.get("DB_USER")
+ehost = os.environ.get("DB_HOST")
+eport = os.environ.get("DB_PORT")
 
 connectionA = ""
 folderA = "B/"
@@ -45,11 +52,11 @@ result = []
 output_filename = "SQL_221416"
 for i in range(1, 13):
     try:
-        connectionA = psycopg2.connect(user=credentials.user,
-                                       password=credentials.password,
-                                       host=credentials.host,
-                                       port=credentials.port,
-                                       database=credentials.db)
+        connectionA = psycopg2.connect(user=euser,
+                                       password=epassword,
+                                       host=ehost,
+                                       port=eport,
+                                       database=edb)
 
         # Create a cursor to perform database operations
         cursorA = connectionA.cursor()

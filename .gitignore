@@ -2,4 +2,5 @@
 credentials.py
 *.zip
 *.pyc
+*.env
 result.json
